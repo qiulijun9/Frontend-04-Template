@@ -12,3 +12,4 @@
    可以同步的方式写异步代码
 4. co +generator
    早期通过 generator 模拟 async/await
+   不推荐使用
