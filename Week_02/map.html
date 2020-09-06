@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .cell {
+        display: inline-block;
+        line-height: 7px;
+        width: 6px;
+        height: 6px;
+        background-color: gray;
+        border-bottom: 1px solid #fff;
+        border-right: 1px solid #fff;
+        vertical-align: middle;
+      }
+      #container {
+        width: 701px;
+        font-size: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <button onclick="localStorage.setItem('map',JSON.stringify(map))">
+      保存
+    </button>
+  </body>
+  <script>
+    // 初始化map
+    let map = localStorage.getItem('map')
+      ? JSON.parse(localStorage.getItem('map'))
+      : Array(10000).fill(0)
+
+    let container = document.getElementById('container')
+    for (let y = 0; y < 100; y++) {
+      for (let x = 0; x < 100; x++) {
+        let cell = document.createElement('div')
+        cell.classList.add('cell')
+
+        if (map[100 * y + x] == 1) {
+          cell.style.backgroundColor = '#000'
+        }
+
+        cell.addEventListener('mousemove', () => {
+          if (mousedown) {
+            if (clear) {
+              // 右键 清除墙
+              cell.style.backgroundColor = ''
+              map[100 * y + x] = 0
+            } else {
+              //左键 设置墙
+              cell.style.backgroundColor = '#000'
+              map[100 * y + x] = 1
+            }
+          }
+        })
+        container.appendChild(cell)
+      }
+    }
+
+    let mousedown = false
+    let clear = false
+    // 画下点
+    document.addEventListener('mousedown', e => {
+      mousedown = true
+      clear = e.which === 3
+    })
+
+    document.addEventListener('mouseup', () => {
+      mousedown = false
+    })
+    // 右键禁掉菜单
+    document.addEventListener('contextmenu', e => {
+      e.preventDefault()
+    })
+
+    // 找最小的数组
+    class Sorted {
+      constructor(data, compare) {
+        this.data = data.slice()
+        this.compare =
+          compare ||
+          ((a, b) => {
+            a - b
+          })
+      }
+
+      take() {
+        if (!this.data.length) {
+          return
+        }
+
+        let min = this.data[0]
+        let minIndex = 0
+        for (let i = 0; i < this.data.length; i++) {
+          if (this.compare(this.data[i], min) < 0) {
+            min = this.data[i]
+            minIndex = i
+          }
+        }
+        this.data[minIndex] = this.data[this.data.length - 1]
+        this.data.pop()
+        return min
+      }
+      give(v) {
+        this.data.push(v)
+      }
+    }
+
+    // 路径 找到第一个点的上下左右，在把该点旁边的点也加到这个集合(队列)中
+    // 广度优先搜索 采用队列
+    // 深度优先搜索采用栈
+
+    async function findpath(map, start, end) {
+      let table = Object.create(map)
+
+      let queue = new Sorted([start], (a, b) => distance(a) - distance(b))
+      // 使用 push shift 模拟队列
+
+      async function insert(x, y, pre) {
+        //  遇到边
+        if (x < 0 || x >= 100 || y < 0 || y >= 100) {
+          return
+        }
+
+        // 已经找过的点
+        if (map[y * 100 + x]) {
+          return
+        }
+
+        container.children[y * 100 + x].style.backgroundColor = 'red'
+        // 保存已经找过的点
+        table[y * 100 + x] = pre
+        map[y * 100 + x] = 2
+        queue.give([x, y]) // 入队
+      }
+
+      function distance(point) {
+        return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2
+      }
+
+      while (queue.data.length) {
+        let [x, y] = queue.take()
+        console.log(x, y)
+        // 找到 end 节点
+        if (x === end[0] && y === end[1]) {
+          // 保存前驱节点
+          let path = []
+          while (x !== start[0] || y !== start[1]) {
+            path.push(map[y * 100 + x])
+            ;[x, y] = table[y * 100 + x]
+            await sleep(1)
+            container.children[y * 100 + x].style.backgroundColor = 'green'
+          }
+          return path
+          // return true
+        }
+
+        // 插入该点的上下左右四个点
+        await insert(x - 1, y, [x, y])
+        await insert(x + 1, y, [x, y])
+        await insert(x, y - 1, [x, y])
+        await insert(x, y + 1, [x, y])
+        // 斜向点
+        await insert(x - 1, y - 1, [x, y])
+        await insert(x + 1, y - 1, [x, y])
+        await insert(x - 1, y - 1, [x, y])
+        await insert(x + 1, y + 1, [x, y])
+      }
+      return null
+    }
+
+    function sleep(t) {
+      return new Promise((resolve, reject) => {
+        setTimeout(resolve, t)
+      })
+    }
+
+    findpath(map, [0, 0], [50, 50])
+  </script>
+</html>
