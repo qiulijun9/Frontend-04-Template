@@ -1,0 +1,100 @@
+<div id="color" style="width: 100px; height: 100px"></div>
+<input id="r" type="range" min="0" max="255" />
+<input id="g" type="range" min="0" max="255" />
+<input id="b" type="range" min="0" max="255" />
+<script>
+  let callbacks = new Map()
+  let useReactives = []
+  let reactives = new Map()
+
+  // 双向绑定
+  function reactive(target) {
+    // 从缓存reactives中获取reactive
+    if (reactives.has(target)) {
+      return reactives.get(target)
+    }
+    let proxy = new Proxy(target, {
+      // 设置对象的属性
+      set(obj, props, value) {
+        obj[props] = value
+        if (callbacks.get(obj)) {
+          if (callbacks.get(obj).get(props)) {
+            for (let callback of callbacks.get(obj).get(props)) {
+              callback()
+            }
+          }
+        }
+
+        // console.log(value)
+        return obj[props]
+      },
+      // 获取对象的属性
+      get(obj, props) {
+        // console.log(obj, props)
+        if (typeof obj[props] === 'object') {
+          return reactive(obj[props])
+        }
+        useReactives.push([obj, props])
+        return obj[props]
+      },
+    })
+
+    // 缓存 reactive
+    reactives.set(target, proxy)
+    return proxy
+  }
+
+  // 每次set 值都会触发监听函数
+  function effect(callback) {
+    // callbacks.push(callback)
+    useReactives = []
+    callback()
+    for (let reactive of useReactives) {
+      // 没有key  第一层对象，第二层属性：值
+      if (!callbacks.has(reactive[0])) {
+        callbacks.set(reactive[0], new Map())
+      }
+
+      if (!callbacks.get(reactive[0]).has(reactive[1])) {
+        callbacks.get(reactive[0]).set(reactive[1], [])
+      }
+
+      callbacks.get(reactive[0]).get(reactive[1]).push(callback)
+    }
+    console.log(useReactives)
+  }
+
+  let obj = { name: 'xx' }
+  let po = reactive(obj)
+  effect(() => {
+    document.getElementById('r').value = po.r
+  })
+  effect(() => {
+    document.getElementById('g').value = po.g
+  })
+  effect(() => {
+    document.getElementById('b').value = po.b
+  })
+  effect(() => {
+    document.getElementById(
+      'color',
+    ).style.backgroundColor = `rgba(${po.r},${po.g},${po.b})`
+  })
+
+  document.getElementById('r').addEventListener('input', e => {
+    po.r = e.target.value
+  })
+  document.getElementById('g').addEventListener('input', e => {
+    po.g = e.target.value
+  })
+  document.getElementById('b').addEventListener('input', e => {
+    po.b = e.target.value
+  })
+  po.name = '444'
+  po.age = 21
+  po.r = 11
+  po.g = 22
+  po.b = 33
+
+  // console.log(a, obj)
+</script>
