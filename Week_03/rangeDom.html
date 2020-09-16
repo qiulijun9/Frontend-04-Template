@@ -21,6 +21,11 @@
         background-color: #eee;
       "
     ></div>
+    <div>
+      <!-- <p style="color: red; border: 1px solid">
+        给p设置border，但不给它设置border-color
+      </p> -->
+    </div>
   </body>
   <script>
     const drag = document.getElementById('drag')
@@ -69,6 +74,7 @@
       range.setStart(container.childNodes[0], i)
       range.setEnd(container.childNodes[0], i)
       ranges.push(range)
+      range.detach()
     }
     console.log(777, ranges)
 
