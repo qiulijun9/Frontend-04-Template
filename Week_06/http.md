@@ -1,21 +1,31 @@
 ISO 七层网络模型
 物理层
 数据链路层
-网络层
-传输层 （tcp 协议 host,ip 协议 port)
-(http 协议 Method,path)
+网络层 （Internet 层 IP 协议，require net）
+
+---
+
+(http 协议 Method,path, 通常会用 http 的包)
 会话层
 表示层
 应用层
 
-tcp:
-通过流来进行传输
+tcp:（全双工通道）
+通过流来进行传输，需要 ip 和端口来处理从网卡接受的数据，唯一标识
 
 http:
-由 客户端发送 request 再由服务端响应 response
-http 协议是文本型的协议，传输的内容都为字符
+由 客户端发送 request 再由服务端响应 response，一个 request 对应一个 response
+http 协议是文本型的协议，传输的内容都为字符串
 
-Requset Line: post/http/1.1
+1. request 格式
+   Requset Line:
+   post/http/1.1 ---- Method/路径/http 版本
+   headers:
+   Host:127.0.0.1
+   Content-Type:text/html
+   空行
+   body:
+   find=111&page=1
 
 Method:
 GET（SELECT）：从服务器取出资源（一项或多项）。通过地址栏访问
@@ -48,3 +58,7 @@ body:
 <html><body>hello world</body></html>
 
 http 状态码
+
+浏览器工作原理：
+浏览器解析过程：
+url(http) ---> html(parse)--->dom(css computing) --->dom with css(layout) --->dom with position(render) ---> bitmap(图片) 通过操作系统渲染位图
