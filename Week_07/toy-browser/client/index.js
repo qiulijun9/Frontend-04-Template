@@ -1,29 +1,13 @@
 // 引入net 模块建立tcp 连接
-const net = require('net')
-const parser = require('./parser')
-
-// http 请求
+import net from 'net'
+import { parseHTML } from './parser.js'
 /**
- * 使用：
- * let request = new Request(
-   {
-    method: 'POST',
-    host: '127.0.0.1',
-    port: '8000',
-    path: '/',
-    headers: {
-      ['x-hello']: 'world',
-    },
-    body: {
-      name: 'hello',
-    },
-  })
-  const response = await request.send() 返回一个promise ,获取响应的内容
- 1.定义一个Request 类
- 2.接收options 中的参数，根据不同的header 返回不同的body（body格式 key:value），但是header 必须存在
-  只处理POST 和 GET 两种方式 ,application/json  json / application/x-www-form-urlencoded (key:value)
- 3.编写send函数
-   返回一个promise，从ResponseParser 中获取信息，并返回
+ * http 请求
+ * 1.定义一个Request 类
+ * 2.接收options 中的参数，根据不同的header 返回不同的body（body格式 key:value），但是header 必须存在
+ * 只处理POST 和 GET 两种方式 ,application/json  json / application/x-www-form-urlencoded (key:value）
+ * 3. send 方法返回解析内容
+ * 返回一个promise，从ResponseParser 中获取信息，并返回
  *
  */
 
@@ -115,18 +99,12 @@ ${this.bodyText}`
   }
 }
 
-// 根据逐步接受resonse 文本进行分析 http response
 /**
-  #  reponse 格式：
-   status line：   http版本号，http 状态码
-   http/1.1 200
-   heders:
-   Content-Type:text/html
-   Date:Mon,23 Dec 2020
-   Connection:keep-alive
-   Transfer-Encoding:chunked
+ * 根据逐步接受resonse 文本进行分析 http response
+ * 
   eg:
-   POST / HTTP/1.1
+   POST / HTTP/1.1  http版本号，http 状态码
+   heders:
    x-hello: world
    Content-Length: 10
    Content-Type: application/x-www-form-urlencoded
@@ -136,7 +114,7 @@ ${this.bodyText}`
  ...
    
 
-   WAITING_STATUS_LINE--->WAITING_STATUS_LINE_END--->WAITING_HEADER_NAME--->WAITING_HEADER_SPACE---> WAITING_HEADER_VALUE--->WAITING_HEADER_LINE_END --->WAITING_HEADER_BLOCK_END--->WAITING_BODY
+ WAITING_STATUS_LINE--->WAITING_STATUS_LINE_END--->WAITING_HEADER_NAME--->WAITING_HEADER_SPACE---> WAITING_HEADER_VALUE--->WAITING_HEADER_LINE_END --->WAITING_HEADER_BLOCK_END--->WAITING_BODY
  *
  */
 class ResponseParser {
@@ -314,7 +292,7 @@ class TrunkedBodyParser {
 }
 
 void (async function () {
-  let request = new Request({
+  const request = new Request({
     method: 'POST',
     host: '127.0.0.1',
     port: '8000',
@@ -326,7 +304,7 @@ void (async function () {
       name: 'hello',
     },
   })
-  let response = await request.send()
-  let dom = parser.parseHTML(response.body)
-  // console.log(dom)
+  const response = await request.send()
+  const dom = parseHTML(response.body)
+  // console.log('dom', dom)
 })()

@@ -1,4 +1,4 @@
-const http = require('http')
+import http from 'http'
 
 // 创建http 服务器
 const server = http.createServer((req, res) => {
