@@ -4,7 +4,8 @@
   "description": "https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-tree-construction?hl=zh-cn",
   "main": "index.js",
   "dependencies": {
-    "css": "^3.0.0"
+    "css": "^3.0.0",
+    "images": "^3.2.3"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,6 +1,8 @@
 // 引入net 模块建立tcp 连接
 import net from 'net'
+import images from 'images'
 import { parseHTML } from './parser.js'
+import { render } from './render.js'
 /**
  * http 请求
  * 1.定义一个Request 类
@@ -65,7 +67,7 @@ class Request {
         parser.receive(data.toString())
 
         if (parser.isFinished) {
-          console.log(parser.response)
+          // console.log("response",parser.response)
           resolve(parser.response)
           connection.end()
         }
@@ -74,10 +76,6 @@ class Request {
         console.log(err)
         reject(err)
         connection.end()
-      })
-
-      connection.on('close', function (data) {
-        console.log('连接断开')
       })
     })
   }
@@ -306,5 +304,8 @@ void (async function () {
   })
   const response = await request.send()
   const dom = parseHTML(response.body)
-  // console.log('dom', dom)
+  console.log('dom', dom)
+  const viewPort = images(800, 800)
+  render(viewPort, dom)
+  viewPort.save('1.jpg')
 })()

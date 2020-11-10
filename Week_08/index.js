@@ -10,45 +10,54 @@ const server = http.createServer((req, res) => {
     .on('data', chunk => {
       body.push(chunk)
     })
-    .on('close', function () {
-      console.log('客户端连接断开')
-    })
     .on('end', () => {
       body = Buffer.concat(body).toString()
       console.log('body', body)
       res.writeHead(200, { 'Content-Type': 'text/html' })
       res.end(
         `<html lang="en">
-        <head>
-            <style>
-                body div img #myimg {
-                    width: 100px;
-                    background-color:#fff;
-                }
-                body div img{
+          <head>
+              <style>
+                  body div img {
                     width: 30px;
-                    background-color:#eee;
-                }
-                .hi{
-                  background-color:red;
-                }
-                #mydiv{
-                  width:200px;
-                  background-color:blue;
-                }
-                .hello{
-                  background-color:yellow;
-                }
-            </style>
-            <body>
-                <div>
-                    <img id="myimg" />
+                    background-color:rgb(123,104,238);
+                  }
+                  #container {
+                    width: 500px;
+                    height: 300px;
+                    display: flex;
+                    flex-direction:row;
+                    background-color: rgb(127,255,212);
+                  }
+
+                  #container .hello {
+                    background-color: rgb(0,205,205);
+                  }
+
+                  #container #myid {
+                    width: 200px;
+                    height: 100px;
+                    background-color: rgb(135,185,100);
+                  }
+                 
+                  .btn {
+                      flex: 1;
+                      background-color:rgb(0,0,0);
+                  }
+                  .foo{
+                    width:400px;
+                    background-color:rgb(255,215,0)
+                  }
+              </style>
+              <body>
+                  <div id="container">
                     <img />
-                    <img class="hi" />
-                    <div style="height:50px; width:50px;" id="mydiv" class="hello" >123</div>
-                </div>
-            </body>
-        </head>
+                    <div id="myid" class="hello"></div>
+                    <div class="btn"></div>
+                    <div class="foo"></div>
+                  </div>
+              </body>
+          </head>
         </html>
         `,
       )

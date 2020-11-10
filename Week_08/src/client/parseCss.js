@@ -2,25 +2,22 @@ import css from 'css'
 const cssRules = []
 
 /**
- *
  * [inline,id,class,tagName]
  * 优先级是由 A 、B、C、D 的值来决定的，其中它们的值计算规则如下：
- * 如果存在内联样式，那么 A = 1, 否则 A = 0;
- * B 的值等于 ID选择器 出现的次数;
- * C 的值等于 类选择器 和 属性选择器 和 伪类 出现的总次数;
- * D 的值等于 标签选择器 和 伪元素 出现的总次数
- * 比较规则是: 从左往右依次进行比较 ，较大者胜出，如果相等，则继续往右移动一位进行比较 。如果4位全部相等，则后面的会覆盖前面的
+ * 如果存在内联样式，那么 A = 1, 否则 A = 0; 内联样式目前不在css dom 树上
+ * B: id 选择器出现的次数
+ * C: class 选择器出现的次数
+ * D: 标签选择器出现的次数
+ * 比较规则是: 从左往右依次进行比较 ，返回较大的值，如果相等，则继续往右移动一位进行比较 ，如果4位全部相等，则后面的会覆盖前面的
  *
  */
 
 // 计算优先级
-function computeSpecificity(element, selector) {
+function computeSpecificity(selector) {
   const sp = [0, 0, 0, 0]
   const selectorParts = selector.split(' ')
-  const inline = element.attributes.find(attr => attr.name === 'style')
-  if (inline) {
-    sp[0] += 1
-  }
+  // console.log(888, selectorParts)
+
   for (let parts of selectorParts) {
     if (parts.charAt(0) === '#') {
       sp[1] += 1
@@ -35,17 +32,11 @@ function computeSpecificity(element, selector) {
 
 // 比较选择器 从左往右依次比较
 function compareSpecificity(sp1, sp2) {
-  console.log(sp1, sp2)
-  if (sp1[0] !== sp2[0]) {
-    return sp1[0] - sp2[0]
+  for (let i = 0; i < sp1.length; i++) {
+    if (sp1[i] !== sp2[i]) {
+      return sp1[i] - sp2[i]
+    }
   }
-  if (sp1[1] !== sp2[1]) {
-    return sp1[1] - sp2[1]
-  }
-  if (sp1[2] !== sp2[2]) {
-    return sp1[2] - sp2[2]
-  }
-  return sp1[3] - sp2[3]
 }
 
 // 仅对 class,id，tagName 选择器做匹配
@@ -54,7 +45,6 @@ function matchSelector(element, selector) {
   if (!selector || !element.attributes) {
     return false
   }
-
   const attrClass = element.attributes.find(attr => attr.name === 'class')
   const attrId = element.attributes.find(attr => attr.name === 'id')
   const selectorType = selector.charAt(0)
@@ -77,51 +67,60 @@ function matchSelector(element, selector) {
 export function computeCSS(element, stack) {
   // 获取所有的元素（父元素），元素是从当前元素开始向外匹配父元素
   const elements = stack.slice().reverse()
-
   for (let cssRule of cssRules) {
     // 由里向外匹配css 规则  eg.['#myid','img','div','body']
     const selectorParts = cssRule.selectors[0].split(' ').reverse()
-
+    // 匹配当前的元素
     if (!matchSelector(element, selectorParts[0])) {
       continue
     }
 
+    // 匹配元素的父元素
     let j = 1
     for (let i = 0; i < elements.length; i++) {
-      // 当前元素和当前的css 是否匹配
-
+      // 当前dom 元素的属性和当前的css 是否匹配
       if (matchSelector(elements[i], selectorParts[j])) {
         j++
       }
     }
 
-    // css规则匹配完代表 元素和css的匹配完成
+    // css规则和元素匹配完成
     if (j >= selectorParts.length) {
       // 计算css 的优先级
-      const specificity = computeSpecificity(element, cssRule.selectors[0])
-
-      const { computedStyle } = element
-
+      const specificity = computeSpecificity(cssRule.selectors[0])
       for (let declaration of cssRule.declarations) {
-        if (!computedStyle[declaration.property]) {
-          computedStyle[declaration.property] = {}
-        }
-        if (!computedStyle[declaration.property].specificity) {
-          computedStyle[declaration.property].specificity = specificity
-          computedStyle[declaration.property].value = declaration.value
-        } else if (
-          compareSpecificity(
-            computedStyle[declaration.property].specificity,
-            specificity,
-          ) < 0
-        ) {
-          computedStyle[declaration.property].specificity = specificity
-          computedStyle[declaration.property].value = declaration.value
-        }
+        setComputedStyleDeclaration(element, declaration, specificity)
       }
     }
+
+    // console.log(element.attributes, '----', element.computedStyle)
   }
-  // console.log(666, element)
+
+  function setComputedStyleDeclaration(
+    { computedStyle },
+    declaration,
+    specificity,
+  ) {
+    if (!computedStyle[declaration.property]) {
+      computedStyle[declaration.property] = {}
+    }
+
+    if (!computedStyle[declaration.property].specificity) {
+      computedStyle[declaration.property].specificity = specificity
+      computedStyle[declaration.property].value = declaration.value
+    }
+
+    // 优先级高的覆盖之前的css
+    if (
+      compareSpecificity(
+        computedStyle[declaration.property].specificity,
+        specificity,
+      ) < 0
+    ) {
+      computedStyle[declaration.property].specificity = specificity
+      computedStyle[declaration.property].value = declaration.value
+    }
+  }
 }
 
 export function addCssRules(text) {
