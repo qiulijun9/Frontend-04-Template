@@ -18,8 +18,12 @@ const server = http.createServer((req, res) => {
         `<html lang="en">
           <head>
               <style>
+                 body{
+                  background-color:rgb(0,0,0);
+                 }
                   body div img {
                     width: 30px;
+                    height: 100px;
                     background-color:rgb(123,104,238);
                   }
                   #container {
@@ -27,7 +31,8 @@ const server = http.createServer((req, res) => {
                     height: 300px;
                     display: flex;
                     flex-direction:row;
-                    background-color: rgb(127,255,212);
+                    flex-wrap:wrap;
+                    background-color: rgb(255,255,255);
                   }
 
                   #container .hello {
@@ -42,10 +47,12 @@ const server = http.createServer((req, res) => {
                  
                   .btn {
                       flex: 1;
-                      background-color:rgb(0,0,0);
+                      height:100px;
+                      background-color:rgb(237,145,33);
                   }
                   .foo{
                     width:400px;
+                    height:100px;
                     background-color:rgb(255,215,0)
                   }
               </style>
