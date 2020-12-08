@@ -1,1 +1,80 @@
-学习笔记
+https://juejin.im/post/5be8d817e51d457f7a4aba13
+https://juejin.im/post/5bea349a518825170d1a9db1
+
+# html 的演变历史
+
+XML,SGML(由 IBM 使用的数据描述语言)
+SGML：是一套严谨的文件描述方法，包括语法定义，DTD，文件实例三部分
+XML:是可扩展的标记语言，被设计的是传输和存储数据,SGML 的子集。使用的是严格模式,而 HTML 用来格式化显示数据
+
+DTD:（定义 SGML 子集的格式）文档类型定义,定义合法的 XML 文档构建模块,规定文档中有哪些元素，是一个 URL,但是禁止访问
+
+HTML5：
+是一种构建 web 语言的描述方式，提供了更多的语义化标签
+
+## html 的合法元素
+
+元素，<tagname>
+文本节点，text
+注释节点,<!--Comments -->
+DocumentType,<Doctype html >
+预处理语法，<?a1?>
+CDATA,<![CDATA[]]>
+eg, <![CDATA[<sender>John Smith</sender>]]> 等价于 &lt;sender&gt;John Smith&lt;/sender&gt;
+
+## 常用的字符引用
+
+ASCII 字符：&#161
+&quot: "
+&nbsp 在遇到两个单词时不会分隔会造成分词的现象，不建议使用
+&gt:>
+&lt:<
+&amp :&
+
+# h5 新特性
+
+1. 语义化标签
+   <header></header> 头部区域标签，块级标签
+   <footer></footer> 底部区域标签，块级标签
+   <nav></nav>导航标签，块级标签
+   <time></time> 时间区域标签，内联标签
+   <article></article>文章段落标签，块级标签
+   <aside></aside>独立于该内容的一部分,块级标签,如侧边栏标签，与页面其余内容无关的部分，独立于该内容的一部分
+   <mark></mark>标记标签，内联标签
+   <section></section> 段落标签，块级标签
+   <ruby>汉字<rp>(<rt>han</rt>)</rp></ruby> 注释标签,类似于拼音
+   <em></em> 表示重音标签
+   <hgroup></hgroup>标题组的标签,为了避免副标题产生额外的层级
+   eg: <hgroup><h1></h1><h2></h2></hgroup> 标题组
+   <strong></strong> 强调,这个词在文章的重要性 <em></em> 词的重音 强调标签
+   <cite></cite> 参考文献的引用,书籍或杂志标题
+   <figure></figure> 表示与主文章相关的图像内容,或是文章中插图的图像,独立于文档流,删除之后不会对文档流有影响
+   eg:
+      <figure>
+      <img src="https://.....440px-NeXTcube_first_webserver.JPG"/>
+      <figcaption>The NeXT Computer used by Tim Berners-Lee at CERN. 描述图片或图表下的文字（标题）</figcaption>
+      </figure>
+   <dfn></dfn> 专业术语的定义
+   <pre></pre> 通常用来显示预文本，会保留文本的格式，会保留空格和换行,需用&lt;" 代表 "<"，"&gt;" 代表 ">"
+   <code></code> 显示代码
+
+2. 表单新特性
+   新增的表单属性
+   placehoder：输入框默认提示
+   required:输入区域不为空
+   pattern:正则表达式
+   min,max 最小值，最大值
+   autofocus：获取焦点
+   step：数字间隔
+   multiple:是否多选
+3. video 和 audio
+   audio 目前支持的音频格式：MP3,wav,ogg
+   <audio src="audio/putclub.com_Googlewasjusta.mp3" id="audio"></audio>
+   <video width="600" height="400" id="video" controls="controls">
+   <source src="video/jieda2.mp4" type="audio/mp4"></source>
+   </video>
+4. canvas
+   canvas 用于在网页上绘制图形，需要使用 js 脚本来绘制
+5. web 存储
+   localStorage,sessionStorage
+6. webworker
