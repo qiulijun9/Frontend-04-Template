@@ -1,4 +1,4 @@
-# 节点：
+# 节点包括：
 
 1. element 元素型节点
 
@@ -12,8 +12,8 @@
 - 注释
 - 处理信息
 
-3. Document Fragment :文档片段
-4. Document Type：文档类型
+4. Document Fragment :文档片段
+5. Document Type：文档类型
 
 # 浏览器 DOM API
 
@@ -25,6 +25,8 @@ firstChild
 lastChild
 nextSibling 下一个邻居节点
 previousSibling 上一个邻居节点
+eg:
+document.getElementById("item1").parentNode;
 
 ## 查找 element
 
@@ -42,11 +44,11 @@ insertBefore
 remoteChild ,找到父节点才能移除该节点
 replaceChild
 
-compareDocumentPosition: 比较两个节点中的关系
-contains 检查一个节点是否包含另一个节点的函数
-isEqualNode 检查两个节点是否完全相同，dom 树结构相同就相同
-isSomeNode ： ===
-cloneNode 克隆节点
+compareDocumentPosition: 可以用来对比两个 HTML 节点在文档中的位置关系，包括前后，父子，自身以及跨文档。不仅是 DOM 节点，文本节点，注释节点甚至属性节点的位置关系都可以判定
+contains: 检查一个节点是否包含另一个节点的函数
+isEqualNode: 检查两个节点是否完全相同，dom 树结构相同就相同
+isSomeNode : 用===代替
+cloneNode :克隆节点
 
 # 浏览器事件
 
@@ -54,10 +56,23 @@ addEventListener(type,lisener,[true/false,options])
 type:事件的类型 click,
 lisener：监听类型触发的事件
 
-options：
+options：可以为 false/true,或者是一个对象
 true/false(事件的模式，默认是冒泡，false 为捕获)
 once:listener 事件在添加后只执行一次
-passive：默认为 false ,为了提升性能。若想阻止浏览器的某些默认事件应为 true
+passive：默认为 false ,为了提升性能,永远不会调用 preventDefault 阻止默认事件,若想阻止浏览器的某些默认事件应为 true
+
+eg:
+
+```js
+button.addEventListener(
+  'click',
+  function (e) {
+    e.preventDefault()
+    console.log('link clicked!')
+  },
+  { capture: false, once: true, passive: true },
+)
+```
 
 # Range API
 
@@ -74,9 +89,9 @@ passive：默认为 false ,为了提升性能。若想阻止浏览器的某些�
 <link rel="stylesheet" title="" href=""/ >
 
 访问
-document.stylesheet.rules
+document.styleSheets[0].rules[0]
 
-document.stylesheet.rules[0].insertRule("p {color:red}",0)
+document.styleSheet.rules[0].insertRule("#blanc { color: white }", 0);
 document.stylesheet.rules[0].removeRule(0)
 
 cssStylerule
@@ -120,5 +135,5 @@ scrollIntoView(x,y)
 
 ## layout
 
-getClientRects 获取元素生成的所有的盒
-getBoundingClientRect 只能取到一个，包元素包含的盒取出来,返回元素的大小及相对于窗口的位置
+element.getClientRects 获取元素生成的所有的盒,返回 DOMRect 数组
+element.getBoundingClientRect 只能取到一个，包元素包含的盒取出来,返回元素的大小及相对于窗口的位置
